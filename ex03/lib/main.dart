@@ -15,6 +15,7 @@ class Uygulamam extends StatefulWidget {
 class _UygulamamState extends State<Uygulamam> {
   String expression = "";
   String result = "0";
+
   void calculate() {
     try {
       Parser p = Parser();
@@ -53,21 +54,14 @@ class _UygulamamState extends State<Uygulamam> {
 
   @override
   Widget build(BuildContext context) {
+    final screenHeight = MediaQuery.of(context).size.height;
+    final isLandscape =
+        MediaQuery.of(context).orientation == Orientation.landscape;
+
     return MaterialApp(
       theme: ThemeData(fontFamily: "Roboto"),
       home: Scaffold(
         backgroundColor: Colors.limeAccent,
-        body: Column(
-          children: [
-            ExpressionWidget(expression: expression, result: result),
-            Expanded(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [NumbersWidget(onButtonPressed: buttonPressed)],
-              ),
-            ),
-          ],
-        ),
         appBar: AppBar(
           title: Center(
             child: Text(
@@ -79,6 +73,20 @@ class _UygulamamState extends State<Uygulamam> {
             ),
           ),
           backgroundColor: const Color.fromARGB(255, 0, 30, 82),
+        ),
+        body: Column(
+          children: [
+            // Expression widget - ekranın üst kısmı
+            Container(
+              /*height: isLandscape
+                  ? screenHeight *
+                        0.1 // Yatayda %30
+                  : screenHeight * 0.15, // Dikeyde %25*/
+              child: ExpressionWidget(expression: expression, result: result),
+            ),
+            // Numbers widget - kalan alan
+            Expanded(child: NumbersWidget(onButtonPressed: buttonPressed)),
+          ],
         ),
       ),
     );
@@ -98,9 +106,10 @@ class ExpressionWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: EdgeInsets.all(20),
+      padding: EdgeInsets.all(5),
       alignment: Alignment.centerRight,
       child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.end,
         children: [
           Text(
@@ -108,10 +117,10 @@ class ExpressionWidget extends StatelessWidget {
             style: TextStyle(
               color: Colors.black,
               fontWeight: FontWeight.normal,
-              fontSize: 18.0,
+              fontSize: 25.0,
             ),
           ),
-          SizedBox(height: 10),
+          //SizedBox(height: 10),
           Text(
             result,
             style: TextStyle(
@@ -133,8 +142,13 @@ class NumbersWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isLandscape =
+        MediaQuery.of(context).orientation == Orientation.landscape;
+
     return Column(
-      mainAxisAlignment: MainAxisAlignment.end,
+      mainAxisAlignment: isLandscape
+          ? MainAxisAlignment.end
+          : MainAxisAlignment.end, // Dikeyde bottom'a hizalı
       children: [
         Line(
           textlist: ["7", "8", "9", "C", "AC"],
@@ -145,7 +159,7 @@ class NumbersWidget extends StatelessWidget {
           textColorList: [Colors.black, const Color.fromARGB(255, 255, 0, 0)],
           onButtonPressed: onButtonPressed,
         ),
-        SizedBox(height: 8),
+        //if (isLandscape) SizedBox(height: 4), // Sadece yatayda boşluk
         Line(
           textlist: ["4", "5", "6", "+", "-"],
           backgroundColorList: [
@@ -155,7 +169,7 @@ class NumbersWidget extends StatelessWidget {
           textColorList: [Colors.black, Colors.black],
           onButtonPressed: onButtonPressed,
         ),
-        SizedBox(height: 8),
+        // if (isLandscape) SizedBox(height: 4), // Sadece yatayda boşluk
         Line(
           textlist: ["1", "2", "3", "*", "/"],
           backgroundColorList: [
@@ -165,7 +179,7 @@ class NumbersWidget extends StatelessWidget {
           textColorList: [Colors.black, Colors.black],
           onButtonPressed: onButtonPressed,
         ),
-        SizedBox(height: 8),
+        //if (isLandscape) SizedBox(height: 4), // Sadece yatayda boşluk
         Line(
           textlist: ["0", ".", "00", "=", ""],
           backgroundColorList: [
@@ -202,7 +216,9 @@ class Line extends StatelessWidget {
           Expanded(
             child: CalculatorButton(
               text: textlist[i],
-              backgroundColor: i < 3 ? backgroundColorList[0] : backgroundColorList[1],
+              backgroundColor: i < 3
+                  ? backgroundColorList[0]
+                  : backgroundColorList[1],
               textColor: i < 3 ? textColorList[0] : textColorList[1],
               onPressed: () => onButtonPressed(textlist[i]),
             ),
@@ -228,11 +244,15 @@ class CalculatorButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isLandscape =
+        MediaQuery.of(context).orientation == Orientation.landscape;
+
     return GestureDetector(
       onTap: onPressed,
       child: Container(
-        height: 60,
+        height: isLandscape ? 40 : 85,
         constraints: BoxConstraints(minWidth: 0, maxWidth: double.infinity),
+        margin: EdgeInsets.all(1),
         decoration: BoxDecoration(
           color: backgroundColor,
           border: Border.all(color: Colors.grey),
@@ -244,7 +264,7 @@ class CalculatorButton extends StatelessWidget {
               fontFamily: 'Roboto',
               fontWeight: FontWeight.w600,
               color: textColor,
-              fontSize: 16,
+              fontSize: 20, // Yatayda küçük font
             ),
           ),
         ),
