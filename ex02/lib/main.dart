@@ -12,26 +12,23 @@ class Uygulamam extends StatefulWidget {
 }
 
 class _UygulamamState extends State<Uygulamam> {
-  int expression = 0;
-  int result = 0;
+  String expression = "0";
+  String result = "0";
+
+  void buttonPressed(String buttonText) {
+    print('Button pressed: $buttonText');
+  }
 
   @override
   Widget build(BuildContext context) {
+    final screenHeight = MediaQuery.of(context).size.height;
+    final isLandscape =
+        MediaQuery.of(context).orientation == Orientation.landscape;
+
     return MaterialApp(
       theme: ThemeData(fontFamily: "Roboto"),
       home: Scaffold(
         backgroundColor: Colors.limeAccent,
-        body: Column(
-          children: [
-            ExpressionWidget(expression: expression, result: result),
-            Expanded(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [NumbersWidget()],
-              ),
-            ),
-          ],
-        ),
         appBar: AppBar(
           title: Center(
             child: Text(
@@ -44,10 +41,19 @@ class _UygulamamState extends State<Uygulamam> {
           ),
           backgroundColor: const Color.fromARGB(255, 0, 30, 82),
         ),
+        body: Column(
+          children: [
+            Container(
+              child: ExpressionWidget(expression: expression, result: result),
+            ),
+            Expanded(child: NumbersWidget(onButtonPressed: buttonPressed)),
+          ],
+        ),
       ),
     );
   }
 }
+
 
 class ExpressionWidget extends StatelessWidget {
   const ExpressionWidget({
@@ -56,44 +62,54 @@ class ExpressionWidget extends StatelessWidget {
     required this.result,
   });
 
-  final int expression;
-  final int result;
+  final String expression;
+  final String result;
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.end,
-      children: [
-        Text(
-          textAlign: TextAlign.right,
-          expression.toString(),
-          style: TextStyle(
-            color: Colors.black,
-            fontWeight: FontWeight.bold,
-            fontSize: 20.00,
+    return Container(
+      padding: EdgeInsets.all(5),
+      alignment: Alignment.centerRight,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.end,
+        children: [
+          Text(
+            expression.isEmpty ? "0" : expression,
+            style: TextStyle(
+              color: Colors.black,
+              fontWeight: FontWeight.normal,
+              fontSize: 25.0,
+            ),
           ),
-        ),
-        Text(
-          textAlign: TextAlign.right,
-          result.toString(),
-          style: TextStyle(
-            color: Colors.black,
-            fontWeight: FontWeight.bold,
-            fontSize: 20.00,
+          Text(
+            result,
+            style: TextStyle(
+              color: Colors.black,
+              fontWeight: FontWeight.bold,
+              fontSize: 30.0,
+            ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 }
 
 class NumbersWidget extends StatelessWidget {
-  const NumbersWidget({super.key});
+  final Function(String) onButtonPressed;
+
+  const NumbersWidget({super.key, required this.onButtonPressed});
 
   @override
   Widget build(BuildContext context) {
+    final isLandscape =
+        MediaQuery.of(context).orientation == Orientation.landscape;
+
     return Column(
-      mainAxisAlignment: MainAxisAlignment.end,
+      mainAxisAlignment: isLandscape
+          ? MainAxisAlignment.end
+          : MainAxisAlignment.end, 
       children: [
         Line(
           textlist: ["7", "8", "9", "C", "AC"],
@@ -102,8 +118,8 @@ class NumbersWidget extends StatelessWidget {
             const Color.fromARGB(255, 141, 153, 174),
           ],
           textColorList: [Colors.black, const Color.fromARGB(255, 255, 0, 0)],
+          onButtonPressed: onButtonPressed,
         ),
-        SizedBox(height: 8),
         Line(
           textlist: ["4", "5", "6", "+", "-"],
           backgroundColorList: [
@@ -111,8 +127,8 @@ class NumbersWidget extends StatelessWidget {
             const Color.fromARGB(255, 255, 179, 2),
           ],
           textColorList: [Colors.black, Colors.black],
+          onButtonPressed: onButtonPressed,
         ),
-        SizedBox(height: 8),
         Line(
           textlist: ["1", "2", "3", "*", "/"],
           backgroundColorList: [
@@ -120,8 +136,8 @@ class NumbersWidget extends StatelessWidget {
             const Color.fromARGB(255, 255, 179, 2),
           ],
           textColorList: [Colors.black, Colors.black],
+          onButtonPressed: onButtonPressed,
         ),
-        SizedBox(height: 8),
         Line(
           textlist: ["0", ".", "00", "=", ""],
           backgroundColorList: [
@@ -129,6 +145,7 @@ class NumbersWidget extends StatelessWidget {
             const Color.fromARGB(255, 255, 179, 2),
           ],
           textColorList: [Colors.black, Colors.black],
+          onButtonPressed: onButtonPressed,
         ),
       ],
     );
@@ -136,55 +153,34 @@ class NumbersWidget extends StatelessWidget {
 }
 
 class Line extends StatelessWidget {
+  final List<String> textlist;
+  final List<Color> backgroundColorList;
+  final List<Color> textColorList;
+  final Function(String) onButtonPressed;
+
   const Line({
     super.key,
     required this.textlist,
     required this.backgroundColorList,
     required this.textColorList,
+    required this.onButtonPressed,
   });
-  final List<String> textlist;
-  final List<Color> backgroundColorList;
-  final List<Color> textColorList;
 
   @override
   Widget build(BuildContext context) {
     return Row(
       children: [
-        Expanded(
-          child: CalculatorButton(
-            text: "${textlist[0]}",
-            backgroundColor: backgroundColorList[0],
-            textColor: textColorList[0],
+        for (int i = 0; i < textlist.length; i++)
+          Expanded(
+            child: CalculatorButton(
+              text: textlist[i],
+              backgroundColor: i < 3
+                  ? backgroundColorList[0]
+                  : backgroundColorList[1],
+              textColor: i < 3 ? textColorList[0] : textColorList[1],
+              onPressed: () => onButtonPressed(textlist[i]),
+            ),
           ),
-        ),
-        Expanded(
-          child: CalculatorButton(
-            text: "${textlist[1]}",
-            backgroundColor: backgroundColorList[0],
-            textColor: textColorList[0],
-          ),
-        ),
-        Expanded(
-          child: CalculatorButton(
-            text: "${textlist[2]}",
-            backgroundColor: backgroundColorList[0],
-            textColor: textColorList[0],
-          ),
-        ),
-        Expanded(
-          child: CalculatorButton(
-            text: "${textlist[3]}",
-            backgroundColor: backgroundColorList[1],
-            textColor: textColorList[1],
-          ),
-        ),
-        Expanded(
-          child: CalculatorButton(
-            text: "${textlist[4]}",
-            backgroundColor: backgroundColorList[1],
-            textColor: textColorList[1],
-          ),
-        ),
       ],
     );
   }
@@ -194,22 +190,27 @@ class CalculatorButton extends StatelessWidget {
   final String text;
   final Color backgroundColor;
   final Color textColor;
+  final VoidCallback onPressed;
 
   const CalculatorButton({
     super.key,
     required this.text,
     required this.backgroundColor,
     required this.textColor,
+    required this.onPressed,
   });
 
   @override
   Widget build(BuildContext context) {
+    final isLandscape =
+        MediaQuery.of(context).orientation == Orientation.landscape;
+
     return GestureDetector(
-      onTap: () => print('buton pressed: $text'),
-      onLongPress: () => print('sakin ol bro basılı tutma!'),
+      onTap: onPressed,
       child: Container(
-        height: 60,
+        height: isLandscape ? 40 : 85,
         constraints: BoxConstraints(minWidth: 0, maxWidth: double.infinity),
+        margin: EdgeInsets.all(1),
         decoration: BoxDecoration(
           color: backgroundColor,
           border: Border.all(color: Colors.grey),
@@ -221,7 +222,7 @@ class CalculatorButton extends StatelessWidget {
               fontFamily: 'Roboto',
               fontWeight: FontWeight.w600,
               color: textColor,
-              fontSize: 16,
+              fontSize: 20, 
             ),
           ),
         ),

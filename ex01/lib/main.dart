@@ -13,7 +13,7 @@ class Uygulamam extends StatefulWidget {
 }
 
 class _UygulamamState extends State<Uygulamam> {
-  String metin = "Slmalkm Dunya Anasayfa";
+  String metin = "A simple text";
   bool isChanged = false;
 
   @override
@@ -35,12 +35,11 @@ class _UygulamamState extends State<Uygulamam> {
                   fontSize: 20.00,
                 ),
               ),
-              Image.asset('assets/img/image.png', width: 300),
               ElevatedButton(
                 onPressed: () => print('Button pressed'),
                 onLongPress: () => print('sakin ol bro basılı tutma!'),
                 child: Text(
-                  "Bana tıkla",
+                  "Click me",
                   style: TextStyle(
                     fontFamily: 'Roboto',
                     fontWeight: FontWeight.w600,
@@ -52,10 +51,10 @@ class _UygulamamState extends State<Uygulamam> {
                 onPressed: () {
                   setState(() {
                     if (isChanged) {
-                      metin = "Slmalkm Dunya Anasayfa";
+                      metin = "A simple text";
                       isChanged = false;
                     } else {
-                      metin = "Metin Değiştirildi!";
+                      metin = "Hello World";
                       isChanged = true;
                     }
                   });

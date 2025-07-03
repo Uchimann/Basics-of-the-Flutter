@@ -19,14 +19,13 @@ class Uygulamam extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Text(
-                "Slmalkm Dunya Anasayfa",
+                "A simple text",
                 style: TextStyle(
                   color: Colors.black,
                   fontWeight: FontWeight.bold,
                   fontSize: 20.00,
                 ),
               ),
-              Image.asset('assets/img/image.png', width: 300),
               ElevatedButton(
                 onPressed: () => print('Button pressed'),
                 onLongPress: () => print('sakin ol bro basılı tutma!'),

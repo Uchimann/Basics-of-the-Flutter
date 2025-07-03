@@ -1,4 +1,4 @@
-# ornek_proje
+# ex00
 
 A new Flutter project.
 
